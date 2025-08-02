@@ -64,8 +64,8 @@ export default async function handler(req, res) {
     
     composites.push({
       input: svgBuffer,
-      top: 690, // <-- CAMBIO: Más abajo
-      left: 10
+      top: 700, // <-- CAMBIO: Más abajo
+      left: 35
     });
 
     const bufferFinal = await sharp(path.join(basePath, fileTpl))
