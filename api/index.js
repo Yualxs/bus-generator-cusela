@@ -3,11 +3,15 @@ const path = require('path');
 const sharp = require('sharp');
 
 export default async function handler(req, res) {
+  // --- LÍNEAS DE DIAGNÓSTICO ---
+  const fontPath = path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf');
+  console.log(`Buscando fuente en la ruta: ${fontPath}`);
+  console.log(`¿Existe el archivo de la fuente?: ${fs.existsSync(fontPath)}`);
+  // ---------------------------
+
   try {
     const { allSeats, busInfo } = req.body;
 
-    // --- LÓGICA DE LA FUENTE Y FECHA/HORA (ACTUALIZADO) ---
-    const fontPath = path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf'); // <-- CAMBIO AQUÍ
     const fontBuffer = fs.readFileSync(fontPath);
     const fontBase64 = fontBuffer.toString('base64');
 
@@ -34,7 +38,6 @@ export default async function handler(req, res) {
     </svg>
     `;
     const svgBuffer = Buffer.from(svgText);
-    // ------------------------------------
 
     const mapOcup = {};
     for (const s of allSeats) {
@@ -65,13 +68,13 @@ export default async function handler(req, res) {
 
       const estado = mapOcup[n] ?? 0;
       const sprPath = path.join(basePath, `${txtEstado[estado]}_${String(n).padStart(2, '0')}.png`);
-
+      
       if (fs.existsSync(sprPath)) {
         const spriteBuffer = await sharp(sprPath).resize({ width: escala }).toBuffer();
         composites.push({ input: spriteBuffer, left: pos.x, top: pos.y });
       }
     }
-
+    
     composites.push({
       input: svgBuffer,
       top: 680,
