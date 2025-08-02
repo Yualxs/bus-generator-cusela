@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   try {
     const { allSeats, busInfo } = req.body;
 
-    // --- NUEVA LÓGICA DE TEXTO COMO DIBUJO ---
+    // --- LÓGICA DE LA FUENTE Y FECHA/HORA ---
     const fontPath = path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf');
     const textToSVG = TextToSVG.loadSync(fontPath);
     
@@ -15,9 +15,10 @@ export default async function handler(req, res) {
     const timestamp = now.toLocaleString('es-PE', {
       timeZone: 'America/Lima',
       dateStyle: 'short',
-      timeStyle: 'short',
+      timeStyle: 'medium', // <-- CAMBIO: 'medium' para incluir segundos
     });
-    const text = `Generado: ${timestamp} (Temporal)`;
+    // CAMBIO: Se eliminó la palabra "Generado:"
+    const text = `${timestamp} (Temporal)`; 
     
     const svgAttributes = { fill: '#444' };
     const svgOptions = { x: 0, y: 0, fontSize: 12, anchor: 'top', attributes: svgAttributes };
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
     
     composites.push({
       input: svgBuffer,
-      top: 680,
+      top: 720, // <-- CAMBIO: Más abajo
       left: 10
     });
 
