@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     
     composites.push({
       input: svgBuffer,
-      top: 720, // <-- CAMBIO: Más abajo
+      top: 690, // <-- CAMBIO: Más abajo
       left: 10
     });
 
