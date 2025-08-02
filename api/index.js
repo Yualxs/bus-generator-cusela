@@ -1,43 +1,29 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const TextToSVG = require('text-to-svg');
 
 export default async function handler(req, res) {
-  // --- LÍNEAS DE DIAGNÓSTICO ---
-  const fontPath = path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf');
-  console.log(`Buscando fuente en la ruta: ${fontPath}`);
-  console.log(`¿Existe el archivo de la fuente?: ${fs.existsSync(fontPath)}`);
-  // ---------------------------
-
   try {
     const { allSeats, busInfo } = req.body;
 
-    const fontBuffer = fs.readFileSync(fontPath);
-    const fontBase64 = fontBuffer.toString('base64');
-
+    // --- NUEVA LÓGICA DE TEXTO COMO DIBUJO ---
+    const fontPath = path.join(process.cwd(), 'fonts', 'Roboto-Regular.ttf');
+    const textToSVG = TextToSVG.loadSync(fontPath);
+    
     const now = new Date();
     const timestamp = now.toLocaleString('es-PE', {
       timeZone: 'America/Lima',
       dateStyle: 'short',
       timeStyle: 'short',
     });
-
-    const svgText = `
-    <svg width="300" height="50">
-      <defs>
-        <style type="text/css">
-          @font-face {
-            font-family: 'Roboto';
-            src: url('data:font/truetype;charset=utf-8;base64,${fontBase64}') format('truetype');
-          }
-        </style>
-      </defs>
-      <text x="5" y="20" font-family="'Roboto', sans-serif" font-size="12" fill="#444">
-        Generado: ${timestamp} (Temporal)
-      </text>
-    </svg>
-    `;
+    const text = `Generado: ${timestamp} (Temporal)`;
+    
+    const svgAttributes = { fill: '#444' };
+    const svgOptions = { x: 0, y: 0, fontSize: 12, anchor: 'top', attributes: svgAttributes };
+    const svgText = textToSVG.getSVG(text, svgOptions);
     const svgBuffer = Buffer.from(svgText);
+    // ------------------------------------
 
     const mapOcup = {};
     for (const s of allSeats) {
